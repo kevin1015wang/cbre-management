@@ -31,15 +31,11 @@ export default () => {
         setMainItems(prev => setItemActive(prev, item));
       }}
       username="Umka Marshmallow"
-      usernameSubtitle="5 Stars"
+      usernameSubtitle="Admin"
       userItems={[
         {
           icon: Overflow,
-          label: "User A"
-        },
-        {
-          icon: Overflow,
-          label: "User B"
+          label: "Logout"
         }
       ]}
       onUserItemSelect={item => console.log(item)}

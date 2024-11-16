@@ -21,8 +21,11 @@ export default function App() {
     <StyletronProvider value={engine}>
       <BaseProvider theme={LightTheme}>
         <NavBar />
-
+        
         <PropertyCard />
+        <PropertyCard />
+        <PropertyCard />
+
       </BaseProvider>
     </StyletronProvider>
   );
