@@ -12,7 +12,7 @@ Table locations {
 
 Table energy_resources {
   id integer [primary key]
-  locationId integer [Ref: - locations.id]
+  locationId integer [Ref: > locations.id]
   energySource varchar
   monthlyConsumption integer
   renewablePercentage float
@@ -34,7 +34,7 @@ Table waste_management {
 
 Table eco_initiatives {
   id integer [primary key]
-  locationId integer [Ref: - locations.id]
+  locationId integer [Ref: > locations.id]
   name varchar
   description varchar
   startDate date
