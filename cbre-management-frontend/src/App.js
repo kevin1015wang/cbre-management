@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import { Client as Styletron } from "styletron-engine-monolithic";
 import { Provider as StyletronProvider } from "styletron-react";
@@ -9,33 +8,37 @@ import { APIProvider, Map } from '@vis.gl/react-google-maps';
 
 const engine = new Styletron();
 
-// Wrapper for the content below the NavBar
 const ContentWrapper = styled("div", {
   display: "flex",
   flexDirection: "row",
-  gap: "16px", // Space between the cards and the rectangle
+  gap: "16px",
   padding: "16px",
   overflow: "hidden",
 });
 
-// Left side for the cards
 const LeftColumn = styled("div", {
   display: "flex",
   flexDirection: "column",
-  gap: "16px", // Space between the cards
+  gap: "16px",
   overflowY: "auto",
 });
 
-// Right side for the rectangle
 const RightColumn = styled("div", {
-  flex: 1, // Takes up the remaining space
-  backgroundColor: "#f0f0f0", // Light gray background for the rectangle
+  flex: 1,
+  backgroundColor: "#f0f0f0",
   borderRadius: "8px",
   padding: "16px",
-  height: "500px", // Fixed height for demo purposes
+  height: "500px",
 });
 
 export default function App() {
+  const apiKey = process.env.REACT_APP_API_KEY;
+
+  if (!apiKey) {
+    console.error("API key is missing. Make sure it is defined in your .env file.");
+    return <div>Error: Missing API key</div>;
+  }
+
   return (
     <StyletronProvider value={engine}>
       <BaseProvider theme={LightTheme}>
@@ -49,7 +52,7 @@ export default function App() {
           </LeftColumn>
 
           <RightColumn>
-            <APIProvider apiKey={process.env.REACT_APP_API_KEY}>
+            <APIProvider apiKey={apiKey}>
               <Map
                 style={{ width: '100%', height: '100%' }}
                 defaultCenter={{ lat: 22.54992, lng: 0 }}
