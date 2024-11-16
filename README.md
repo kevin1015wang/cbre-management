@@ -88,7 +88,7 @@ For more information or to contribute to the project, contact:
 - **Project Manager/UX/UI Designer**: Kevin Wang  
   **Email**: kevindw@umich.com 
 
-- **Frontend Developer/Backend Developer**: Jerica Vyuan
+- **Frontend Developer/Backend Developer**: Jerica Yuan
   **Email**: jxyuan@uci.edu
 
 - **Frontend Developer/Backend Developer**: Siddharth Sriram
