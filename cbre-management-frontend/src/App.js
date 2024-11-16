@@ -5,6 +5,7 @@ import { Provider as StyletronProvider } from "styletron-react";
 import { LightTheme, BaseProvider, styled } from "baseui";
 import NavBar from './components/navbar';
 import PropertyCard from './components/propertyCard';
+import { APIProvider, Map } from '@vis.gl/react-google-maps';
 
 const engine = new Styletron();
 
@@ -31,9 +32,8 @@ const RightColumn = styled("div", {
   backgroundColor: "#f0f0f0", // Light gray background for the rectangle
   borderRadius: "8px",
   padding: "16px",
-  height: "500px", // Full viewport height
+  height: "500px", // Fixed height for demo purposes
 });
-
 
 export default function App() {
   return (
@@ -49,7 +49,15 @@ export default function App() {
           </LeftColumn>
 
           <RightColumn>
-            <h2>Google Map!</h2>
+            <APIProvider apiKey={process.env.REACT_APP_API_KEY}>
+              <Map
+                style={{ width: '100%', height: '100%' }}
+                defaultCenter={{ lat: 22.54992, lng: 0 }}
+                defaultZoom={3}
+                gestureHandling={'greedy'}
+                disableDefaultUI={true}
+              />
+            </APIProvider>
           </RightColumn>
         </ContentWrapper>
       </BaseProvider>
