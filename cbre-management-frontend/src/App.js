@@ -14,6 +14,7 @@ const ContentWrapper = styled("div", {
   flexDirection: "row",
   gap: "16px", // Space between the cards and the rectangle
   padding: "16px",
+  overflow: "hidden",
 });
 
 // Left side for the cards
@@ -21,6 +22,7 @@ const LeftColumn = styled("div", {
   display: "flex",
   flexDirection: "column",
   gap: "16px", // Space between the cards
+  overflowY: "auto",
 });
 
 // Right side for the rectangle
@@ -29,7 +31,9 @@ const RightColumn = styled("div", {
   backgroundColor: "#f0f0f0", // Light gray background for the rectangle
   borderRadius: "8px",
   padding: "16px",
+  height: "500px", // Full viewport height
 });
+
 
 export default function App() {
   return (
