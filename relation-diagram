@@ -1,0 +1,42 @@
+// dbdiagram.io works for running this
+
+Table locations {
+  id integer [primary key]
+  name varchar
+  address varchar
+  city varchar
+  state varchar
+  country varchar
+  propertyType varchar
+}
+
+Table energy_resources {
+  id integer [primary key]
+  locationId integer [Ref: - locations.id]
+  energySource varchar
+  monthlyConsumption integer
+  renewablePercentage float
+}
+
+Table water_usage {
+  id integer [primary key]
+  locationId integer [Ref: - locations.id]
+  montlyConsumption integer
+  recycledWaterPercentage float
+}
+
+Table waste_management {
+  id integer [primary key]
+  locationId integer [Ref: - locations.id]
+  monthlyWasteGenerated float
+  percentageRecycled float
+}
+
+Table eco_initiatives {
+  id integer [primary key]
+  locationId integer [Ref: - locations.id]
+  name varchar
+  description varchar
+  startDate date
+  completionDate date
+}
