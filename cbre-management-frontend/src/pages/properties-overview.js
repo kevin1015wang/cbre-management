@@ -37,6 +37,7 @@ export default function PropertiesOverview() {
   const [energy, setEnergy] = useState([]);
   const [mergedData, setMergedData] = useState([]);
   const [water, setWater] = useState([]);
+  const [currPage, setCurrPage] = useState("listProperties");
 
   const [selectedLocation, setSelectedLocation] = useState(null);
   const markersToDisplay = selectedLocation ? [selectedLocation] : locations;
@@ -100,22 +101,38 @@ export default function PropertiesOverview() {
     <ContentWrapper style={{ maxWidth: "1300px", margin: "0 auto" }}>
       <LeftColumn>
         {selectedLocation && (
-          <Button shape={SHAPE.square} size={SIZE.compact} onClick={() => setSelectedLocation(null)}>
+          <Button shape={SHAPE.square} size={SIZE.compact} onClick={() => { setSelectedLocation(null); setCurrPage("listProperties") }}>
             <ArrowLeft size={24} />
           </Button>
         )}
-        {mergedData.map((data) => (
+        {currPage === "listProperties" ? (
+          mergedData.map((data) => (
+            <PropertyCard
+              key={data.id}
+              {...data}
+              onClick={() => {
+                setSelectedLocation((prev) =>
+                  prev?.id === data.id ? null : data
+                );
+                setCurrPage("propDetails");
+                console.log("CLICKED");
+              }}
+            />
+          ))
+        ) : (
+          <></>
+        )}
+
+        {currPage === "propDetails" && selectedLocation && (
           <PropertyCard
-            key={data.id}
-            {...data}
+            key={selectedLocation.id}
+            {...selectedLocation}
             onClick={() => {
-              setSelectedLocation((prev) =>
-                prev?.id === data.id ? null : data
-              );
-              console.log("CLICKED");
+              setSelectedLocation(null);
+              setCurrPage("listProperties");
             }}
           />
-        ))}
+        )}
       </LeftColumn>
 
       <RightColumn>
