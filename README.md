@@ -14,7 +14,7 @@ The **CBRE Eco-Conscious Locations Dashboard** is an initiative to centralize an
 ## Dashboard Schema
 
 ### Tables Overview
-1. **Locations**
+1. **Energy_Usage**
    - ID (Primary Key)
    - Name
    - Address
@@ -23,7 +23,7 @@ The **CBRE Eco-Conscious Locations Dashboard** is an initiative to centralize an
    - Country
    - Property Type (e.g., Office, Retail, Industrial)
 
-2. **Energy_Resources**
+2. **Water_Usage**
    - ID (Primary Key)
    - Location ID (Foreign Key)
    - Energy Source (e.g., Solar, Wind, Grid)
@@ -42,7 +42,7 @@ The **CBRE Eco-Conscious Locations Dashboard** is an initiative to centralize an
    - Monthly Waste Generated (lbs)
    - Percentage Recycled (%)
 
-5. **Eco_Initiatives**
+5. **Carbon_Footprint**
    - ID (Primary Key)
    - Location ID (Foreign Key)
    - Initiative Name
