@@ -8,6 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 import { Card, StyledBody } from "baseui/card";
 import { Search } from "baseui/icon";
 import { Input } from "baseui/input";
+import { Select } from "baseui/select";
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
@@ -49,6 +50,8 @@ export default function PropertiesOverview() {
 
   const [selectedLocation, setSelectedLocation] = useState(null);
   const markersToDisplay = selectedLocation ? [selectedLocation] : locations;
+
+  const [order, setOrder] = React.useState([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -120,6 +123,23 @@ export default function PropertiesOverview() {
     data.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (order.length > 0) {
+      switch (order[0].id) {
+        case "PropertyName":
+          return b.name.localeCompare(a.name); // Reverse alphabetical order
+        case "MonthlyBill":
+          return (b.monthlyBill || 0) - (a.monthlyBill || 0); // Higher bills first
+        case "WaterBill":
+          return (b.waterBill || 0) - (a.waterBill || 0); // Higher bills first
+        default:
+          return 0; // No sorting
+      }
+    }
+    return 0; // No sorting if no order is selected
+  });
+  
+
   return (
     <ContentWrapper style={{ maxWidth: "1300px", margin: "0 auto" }}>
       <LeftColumn>
@@ -131,6 +151,31 @@ export default function PropertiesOverview() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "16px" }}>
+            <span>Order by:</span>
+            <Select
+              options={[
+                { label: "Property Name", id: "PropertyName" },
+                { label: "Monthly Bill", id: "MonthlyBill" },
+                { label: "Water Bill", id: "WaterBill" },
+              ]}
+              labelKey="label"
+              valueKey="id"
+              size={SIZE.mini}
+              placeholder="Select order"
+              onChange={({ value }) => setOrder(value)}
+              overrides={{
+                ControlContainer: {
+                  style: () => ({
+                    width: "400px",
+                  }),
+                },
+              }}
+              value={order}
+            />
+
+          </div>
         </div>
         {selectedLocation && (
           <Button
@@ -145,7 +190,7 @@ export default function PropertiesOverview() {
           </Button>
         )}
         {currPage === "listProperties" ? (
-          filteredData.map((data) => (
+          sortedData.map((data) => (
             <PropertyCard
               key={data.id}
               {...data}
@@ -160,6 +205,7 @@ export default function PropertiesOverview() {
         ) : (
           <></>
         )}
+
         {currPage === "propDetails" && selectedLocation && (
           <div>
             <PropertyCard
