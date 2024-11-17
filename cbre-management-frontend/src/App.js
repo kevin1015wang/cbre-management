@@ -29,7 +29,6 @@ const RightColumn = styled("div", {
   flex: 1,
   backgroundColor: "#f0f0f0",
   borderRadius: "8px",
-  padding: "16px",
   height: "500px",
 });
 
