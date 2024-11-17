@@ -15,6 +15,7 @@ import {
 } from 'chart.js';
 import PieChartCard from "../components/pieChartCard";
 import BarChartCard from "../components/barChartCard";
+import WideBarChartCard from "../components/wideBarChartCard";
 
 ChartJS.register(
   Title,
@@ -43,8 +44,8 @@ export default function MetricsPage() {
         {BarChartCard()}
       </Row>  
       <Row>
-        {BarChartCard()}
-        {BarChartCard()}
+        {WideBarChartCard()}
+        {WideBarChartCard()}
       </Row>    
     </>
   );
