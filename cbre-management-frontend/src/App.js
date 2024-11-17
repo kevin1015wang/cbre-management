@@ -18,20 +18,6 @@ const ContentWrapper = styled("div", {
   overflow: "hidden",
 });
 
-const LeftColumn = styled("div", {
-  display: "flex",
-  flexDirection: "column",
-  gap: "16px",
-  overflowY: "auto",
-});
-
-const RightColumn = styled("div", {
-  flex: 1,
-  backgroundColor: "#f0f0f0",
-  borderRadius: "8px",
-  height: "500px",
-});
-
 export default function App() {
   return (
     <StyletronProvider value={engine}>
