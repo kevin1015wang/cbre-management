@@ -4,7 +4,7 @@ import PropertyCard from '../components/propertyCard';
 import { APIProvider, Map } from '@vis.gl/react-google-maps';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient('https://rdqcypxlcvevkdosdolr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkcWN5cHhsY3Zldmtkb3Nkb2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE3OTIxOTksImV4cCI6MjA0NzM2ODE5OX0.Zdg2lcaTqMzQdEmJkbR4_t6WKkR_eH9RjRwzQ6KEOm0');
+const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY);
 
 const ContentWrapper = styled("div", {
   display: "flex",
@@ -26,28 +26,65 @@ const RightColumn = styled("div", {
   backgroundColor: "#f0f0f0",
   borderRadius: "8px",
   padding: "1px",
-  height: "500px",
+  height: "600px",
 });
 
 export default function PropertiesOverview() {
   const apiKey = process.env.REACT_APP_API_KEY;
   const [locations, setLocations] = useState([]);
+  const [energy, setEnergy] = useState([]);
+  const [mergedData, setMergedData] = useState([]);
+  const [water, setWater] = useState([]);
 
   useEffect(() => {
-    async function fetchLocations() {
-      const { data, error } = await supabase
+    async function fetchData() {
+      const { data: locationsData, error: locationsError } = await supabase
         .from('Locations')
-        .select('*'); 
-      if (error) {
-        console.error('Error fetching locations:', error);
+        .select('*');
+      if (locationsError) {
+        console.error('Error fetching locations:', locationsError);
       } else {
-        console.log('Locations:', data);
-        setLocations(data);
+        setLocations(locationsData);
+      }
+
+      const { data: energyData, error: energyError } = await supabase
+        .from('energy_bills')
+        .select('*');
+      if (energyError) {
+        console.error('Error fetching energy data:', energyError);
+      } else {
+        setEnergy(energyData);
+      }
+
+      const { data: waterData, error: waterError } = await supabase
+        .from('water_bill')
+        .select('*');
+      if (waterError) {
+        console.error('Error fetching water data:', waterError);
+      } else {
+        setWater(waterData);
       }
     }
 
-    fetchLocations();
+    fetchData();
   }, []);
+
+  useEffect(() => {
+    if (locations.length && energy.length && water.length) {
+      // Merge energy data into locations based on name
+      const combined = locations.map((location) => {
+        const energyInfo = energy.find(
+          (bill) => bill.location === location.name
+        );
+        return {
+          ...location,
+          monthlyBill: energyInfo ? energyInfo.monthlyBill : null,
+          waterBill: water.find((bill) => bill.location_name === location.name)?.water_bill,
+        };
+      });
+      setMergedData(combined);
+    }
+  }, [locations, energy]);
 
   if (!apiKey) {
     console.error("API key is missing. Make sure it is defined in your .env file.");
@@ -57,8 +94,8 @@ export default function PropertiesOverview() {
   return (
     <ContentWrapper style={{ maxWidth: "1300px", margin: "0 auto" }}>
       <LeftColumn>
-        {locations.map((location) => (
-          <PropertyCard key={location.id} {...location} />
+        {mergedData.map((data) => (
+          <PropertyCard key={data.id} {...data} />
         ))}
       </LeftColumn>
 
@@ -66,8 +103,8 @@ export default function PropertiesOverview() {
         <APIProvider apiKey={apiKey}>
           <Map
             style={{ width: '100%', height: '100%' }}
-            defaultCenter={{ lat: 22.54992, lng: 0 }}
-            defaultZoom={3}
+            defaultCenter={{ lat: 32.7767, lng: -96.7970 }}
+            defaultZoom={12}
             gestureHandling={'greedy'}
             disableDefaultUI={true}
           />

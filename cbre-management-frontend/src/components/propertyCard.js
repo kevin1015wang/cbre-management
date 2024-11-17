@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Card, StyledBody } from "baseui/card";
 
-export default function PropertyCard({ name, address, ecoRating, electricityBill, waterBill, image_url }) {
+export default function PropertyCard({ name, address, ecoRating, monthlyBill, waterBill, image_url }) {
   return (
     <Card overrides={{ Root: { style: { width: "450px" } } }}>
       <StyledBody>
@@ -18,7 +18,7 @@ export default function PropertyCard({ name, address, ecoRating, electricityBill
             <br />
             Eco-Rating: {ecoRating}
             <br />
-            Electricity bill: ${electricityBill}
+            Electricity bill: ${monthlyBill}
             <br />
             Water bill: ${waterBill}
           </div>
