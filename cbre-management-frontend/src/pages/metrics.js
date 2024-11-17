@@ -31,6 +31,11 @@ ChartJS.register(
   BarController
 );
 
+const ContentWrapper = styled("div", {
+  gap: "16px",
+  padding: "16px",
+});
+
 const Row = styled("div", {
   display: "flex",
   flexDirection: "row",
@@ -57,23 +62,33 @@ export default function MetricsPage() {
   }, []);
 
   return (
-    <>
+    <ContentWrapper style={{ maxWidth: "1300px", margin: "0 auto" }}>
       <Row>
-        <Select
-          options={
-            locations.map(location => ({
-              id: location.name,
-              color: location.name
-            }))
-          }
-          labelKey="id"
-          size={SIZE.mini}
-          valueKey="color"
-          placeholder="Select property"
-          onChange={({ value }) => setValue(value)}
-          value={value}
-        />
+        <div style={{ width: "400px" }}>
+          <Select
+            options={
+              locations.map(location => ({
+                id: location.name,
+                color: location.name
+              }))
+            }
+            labelKey="id"
+            size={SIZE.mini}
+            valueKey="color"
+            placeholder="Select property"
+            onChange={({ value }) => setValue(value)}
+            overrides={{
+              ControlContainer: {
+                style: () => ({
+                  width: "400px",
+                }),
+              },
+            }}
+            value={value}
+          />
+        </div>
       </Row>
+      <div style={{ height: "16px" }} />
       <Row>
         {PieChartCard()}
         {PieChartCard()}
@@ -83,6 +98,6 @@ export default function MetricsPage() {
         {WideBarChartCard()}
         {WideBarChartCard()}
       </Row>
-    </>
+    </ContentWrapper>
   );
 }
