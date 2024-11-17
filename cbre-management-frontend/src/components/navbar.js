@@ -22,7 +22,7 @@ export default () => {
 
   return (
     <AppNavBar
-      title="Property Management Dashboard"
+      title="TowerTracker"
       mainItems={mainItems}
       onMainItemSelect={item => {
         setMainItems(prev => setItemActive(prev, item));
