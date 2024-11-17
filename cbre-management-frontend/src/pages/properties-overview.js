@@ -5,6 +5,7 @@ import PropertyCard from '../components/propertyCard';
 import ArrowLeft from 'baseui/icon/arrow-left'
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 import { createClient } from '@supabase/supabase-js';
+import { Card, StyledBody, StyledAction } from "baseui/card";
 
 const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY);
 
@@ -38,6 +39,7 @@ export default function PropertiesOverview() {
   const [mergedData, setMergedData] = useState([]);
   const [water, setWater] = useState([]);
   const [currPage, setCurrPage] = useState("listProperties");
+  const [improvementData, setImprovementData] = useState([]);
 
   const [selectedLocation, setSelectedLocation] = useState(null);
   const markersToDisplay = selectedLocation ? [selectedLocation] : locations;
@@ -70,6 +72,15 @@ export default function PropertiesOverview() {
       } else {
         setWater(waterData);
       }
+
+      const { data: improvementData, error: improvementError } = await supabase
+        .from('improvements')
+        .select('*');
+      if (improvementError) {
+        console.error('Error fetching improvement data:', improvementError);
+      } else {
+        setImprovementData(improvementData);
+      }
     }
 
     fetchData();
@@ -86,11 +97,12 @@ export default function PropertiesOverview() {
           ...location,
           monthlyBill: energyInfo ? energyInfo.monthlyBill : null,
           waterBill: water.find((bill) => bill.location_name === location.name)?.water_bill,
+          improvementData: improvementData.find((improvement) => improvement.location === location.name),
         };
       });
       setMergedData(combined);
     }
-  }, [locations, energy, water]);
+  }, [locations, energy, water, improvementData]);
 
   if (!apiKey) {
     console.error("API key is missing. Make sure it is defined in your .env file.");
@@ -124,14 +136,50 @@ export default function PropertiesOverview() {
         )}
 
         {currPage === "propDetails" && selectedLocation && (
-          <PropertyCard
-            key={selectedLocation.id}
-            {...selectedLocation}
-            onClick={() => {
-              setSelectedLocation(null);
-              setCurrPage("listProperties");
-            }}
-          />
+          <div>
+            <PropertyCard
+              key={selectedLocation.id}
+              {...selectedLocation}
+              onClick={() => {
+                setSelectedLocation(null);
+                setCurrPage("listProperties");
+              }}
+            />
+
+            <div style={{ height: "16px" }}></div>
+
+            <Card
+              overrides={{ Root: { style: { width: "454px" } } }}
+              title="Improvement Data"
+            >
+              <StyledBody>
+                {selectedLocation.improvementData ? (
+                  <>
+                    <h3>Electricity Efficiency</h3>
+                    <ul>
+                      {selectedLocation.improvementData.electricity_efficiency.map((improvement, index) => (
+                        <li key={index}>{improvement}</li>
+                      ))}
+                    </ul>
+                    <h3>Water Efficiency</h3>
+                    <ul>
+                      {selectedLocation.improvementData.water_efficiency.map((improvement, index) => (
+                        <li key={index}>{improvement}</li>
+                      ))}
+                    </ul>
+                    <h3>Building Enhancements</h3>
+                    <ul>
+                      {selectedLocation.improvementData.building_enhancements.map((improvement, index) => (
+                        <li key={index}>{improvement}</li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <p>No improvement data available.</p>
+                )}
+              </StyledBody>
+            </Card>
+          </div>
         )}
       </LeftColumn>
 
