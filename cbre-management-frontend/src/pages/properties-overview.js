@@ -123,13 +123,15 @@ export default function PropertiesOverview() {
   return (
     <ContentWrapper style={{ maxWidth: "1300px", margin: "0 auto" }}>
       <LeftColumn>
-        <Input
-          startEnhancer={<Search size="18px" title="" />}
-          placeholder="Search properties..."
-          size="compact"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+        <div>
+          <Input
+            startEnhancer={<Search size="18px" title="" />}
+            placeholder="Search properties"
+            size="compact"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
         {selectedLocation && (
           <Button
             shape={SHAPE.square}
