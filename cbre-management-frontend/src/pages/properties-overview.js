@@ -1,13 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { styled } from "baseui";
 import { Button, SHAPE, SIZE } from "baseui/button";
-import PropertyCard from '../components/propertyCard';
-import ArrowLeft from 'baseui/icon/arrow-left'
-import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
-import { createClient } from '@supabase/supabase-js';
-import { Card, StyledBody, StyledAction } from "baseui/card";
+import PropertyCard from "../components/propertyCard";
+import ArrowLeft from "baseui/icon/arrow-left";
+import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
+import { createClient } from "@supabase/supabase-js";
+import { Card, StyledBody } from "baseui/card";
+import { Search } from "baseui/icon";
+import { Input } from "baseui/input";
 
-const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY);
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
 const ContentWrapper = styled("div", {
   display: "flex",
@@ -40,6 +45,7 @@ export default function PropertiesOverview() {
   const [water, setWater] = useState([]);
   const [currPage, setCurrPage] = useState("listProperties");
   const [improvementData, setImprovementData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [selectedLocation, setSelectedLocation] = useState(null);
   const markersToDisplay = selectedLocation ? [selectedLocation] : locations;
@@ -47,37 +53,37 @@ export default function PropertiesOverview() {
   useEffect(() => {
     async function fetchData() {
       const { data: locationsData, error: locationsError } = await supabase
-        .from('Locations')
-        .select('*');
+        .from("Locations")
+        .select("*");
       if (locationsError) {
-        console.error('Error fetching locations:', locationsError);
+        console.error("Error fetching locations:", locationsError);
       } else {
         setLocations(locationsData);
       }
 
       const { data: energyData, error: energyError } = await supabase
-        .from('energy_bills')
-        .select('*');
+        .from("energy_bills")
+        .select("*");
       if (energyError) {
-        console.error('Error fetching energy data:', energyError);
+        console.error("Error fetching energy data:", energyError);
       } else {
         setEnergy(energyData);
       }
 
       const { data: waterData, error: waterError } = await supabase
-        .from('water_bill')
-        .select('*');
+        .from("water_bill")
+        .select("*");
       if (waterError) {
-        console.error('Error fetching water data:', waterError);
+        console.error("Error fetching water data:", waterError);
       } else {
         setWater(waterData);
       }
 
       const { data: improvementData, error: improvementError } = await supabase
-        .from('improvements')
-        .select('*');
+        .from("improvements")
+        .select("*");
       if (improvementError) {
-        console.error('Error fetching improvement data:', improvementError);
+        console.error("Error fetching improvement data:", improvementError);
       } else {
         setImprovementData(improvementData);
       }
@@ -88,7 +94,6 @@ export default function PropertiesOverview() {
 
   useEffect(() => {
     if (locations.length && energy.length && water.length) {
-      // Merge energy data into locations based on name
       const combined = locations.map((location) => {
         const energyInfo = energy.find(
           (bill) => bill.location === location.name
@@ -105,20 +110,40 @@ export default function PropertiesOverview() {
   }, [locations, energy, water, improvementData]);
 
   if (!apiKey) {
-    console.error("API key is missing. Make sure it is defined in your .env file.");
+    console.error(
+      "API key is missing. Make sure it is defined in your .env file."
+    );
     return <div>Error: Missing API key</div>;
   }
+
+  const filteredData = mergedData.filter((data) =>
+    data.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <ContentWrapper style={{ maxWidth: "1300px", margin: "0 auto" }}>
       <LeftColumn>
+        <Input
+          startEnhancer={<Search size="18px" title="" />}
+          placeholder="Search properties..."
+          size="compact"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
         {selectedLocation && (
-          <Button shape={SHAPE.square} size={SIZE.compact} onClick={() => { setSelectedLocation(null); setCurrPage("listProperties") }}>
+          <Button
+            shape={SHAPE.square}
+            size={SIZE.compact}
+            onClick={() => {
+              setSelectedLocation(null);
+              setCurrPage("listProperties");
+            }}
+          >
             <ArrowLeft size={24} />
           </Button>
         )}
         {currPage === "listProperties" ? (
-          mergedData.map((data) => (
+          filteredData.map((data) => (
             <PropertyCard
               key={data.id}
               {...data}
@@ -127,14 +152,12 @@ export default function PropertiesOverview() {
                   prev?.id === data.id ? null : data
                 );
                 setCurrPage("propDetails");
-                console.log("CLICKED");
               }}
             />
           ))
         ) : (
           <></>
         )}
-
         {currPage === "propDetails" && selectedLocation && (
           <div>
             <PropertyCard
@@ -145,9 +168,7 @@ export default function PropertiesOverview() {
                 setCurrPage("listProperties");
               }}
             />
-
             <div style={{ height: "16px" }}></div>
-
             <Card
               overrides={{ Root: { style: { width: "454px" } } }}
               title="Improvement Data"
@@ -157,21 +178,27 @@ export default function PropertiesOverview() {
                   <>
                     <h3>Electricity Efficiency</h3>
                     <ul>
-                      {selectedLocation.improvementData.electricity_efficiency.map((improvement, index) => (
-                        <li key={index}>{improvement}</li>
-                      ))}
+                      {selectedLocation.improvementData.electricity_efficiency.map(
+                        (improvement, index) => (
+                          <li key={index}>{improvement}</li>
+                        )
+                      )}
                     </ul>
                     <h3>Water Efficiency</h3>
                     <ul>
-                      {selectedLocation.improvementData.water_efficiency.map((improvement, index) => (
-                        <li key={index}>{improvement}</li>
-                      ))}
+                      {selectedLocation.improvementData.water_efficiency.map(
+                        (improvement, index) => (
+                          <li key={index}>{improvement}</li>
+                        )
+                      )}
                     </ul>
                     <h3>Building Enhancements</h3>
                     <ul>
-                      {selectedLocation.improvementData.building_enhancements.map((improvement, index) => (
-                        <li key={index}>{improvement}</li>
-                      ))}
+                      {selectedLocation.improvementData.building_enhancements.map(
+                        (improvement, index) => (
+                          <li key={index}>{improvement}</li>
+                        )
+                      )}
                     </ul>
                   </>
                 ) : (
@@ -182,14 +209,13 @@ export default function PropertiesOverview() {
           </div>
         )}
       </LeftColumn>
-
       <RightColumn>
         <APIProvider apiKey={apiKey}>
           <Map
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: "100%", height: "100%" }}
             defaultCenter={{ lat: 32.7767, lng: -96.7970 }}
             defaultZoom={11}
-            gestureHandling={'greedy'}
+            gestureHandling={"greedy"}
             disableDefaultUI={true}
           >
             {markersToDisplay.map((location) => (
