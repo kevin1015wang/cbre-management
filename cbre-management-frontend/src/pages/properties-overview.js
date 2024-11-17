@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from "baseui";
+import { Button, SHAPE, SIZE } from "baseui/button";
 import PropertyCard from '../components/propertyCard';
-import { APIProvider, Map, Marker} from '@vis.gl/react-google-maps';
+import ArrowLeft from 'baseui/icon/arrow-left'
+import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY);
@@ -35,6 +37,9 @@ export default function PropertiesOverview() {
   const [energy, setEnergy] = useState([]);
   const [mergedData, setMergedData] = useState([]);
   const [water, setWater] = useState([]);
+
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const markersToDisplay = selectedLocation ? [selectedLocation] : locations;
 
   useEffect(() => {
     async function fetchData() {
@@ -94,8 +99,22 @@ export default function PropertiesOverview() {
   return (
     <ContentWrapper style={{ maxWidth: "1300px", margin: "0 auto" }}>
       <LeftColumn>
+        {selectedLocation && (
+          <Button shape={SHAPE.square} size={SIZE.compact} onClick={() => setSelectedLocation(null)}>
+            <ArrowLeft size={24} />
+          </Button>
+        )}
         {mergedData.map((data) => (
-          <PropertyCard key={data.id} {...data} />
+          <PropertyCard
+            key={data.id}
+            {...data}
+            onClick={() => {
+              setSelectedLocation((prev) =>
+                prev?.id === data.id ? null : data
+              );
+              console.log("CLICKED");
+            }}
+          />
         ))}
       </LeftColumn>
 
@@ -108,7 +127,7 @@ export default function PropertiesOverview() {
             gestureHandling={'greedy'}
             disableDefaultUI={true}
           >
-            {locations.map((location) => (
+            {markersToDisplay.map((location) => (
               <Marker
                 key={location.id}
                 position={{
