@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from "baseui";
 import PropertyCard from '../components/propertyCard';
-import { APIProvider, Map } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, Marker} from '@vis.gl/react-google-maps';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY);
@@ -84,7 +84,7 @@ export default function PropertiesOverview() {
       });
       setMergedData(combined);
     }
-  }, [locations, energy]);
+  }, [locations, energy, water]);
 
   if (!apiKey) {
     console.error("API key is missing. Make sure it is defined in your .env file.");
@@ -104,10 +104,20 @@ export default function PropertiesOverview() {
           <Map
             style={{ width: '100%', height: '100%' }}
             defaultCenter={{ lat: 32.7767, lng: -96.7970 }}
-            defaultZoom={12}
+            defaultZoom={11}
             gestureHandling={'greedy'}
             disableDefaultUI={true}
-          />
+          >
+            {locations.map((location) => (
+              <Marker
+                key={location.id}
+                position={{
+                  lat: location.lattitude,
+                  lng: location.longitude,
+                }}
+              />
+            ))}
+          </Map>
         </APIProvider>
       </RightColumn>
     </ContentWrapper>
